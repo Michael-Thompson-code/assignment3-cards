@@ -85,6 +85,23 @@ export default function App() {
     setHand([...hand, { id, value, suit }]);
   }
 
+  const deckFace = (
+    <button
+      className={`deck ${deckEmpty ? 'deck-empty' : ''}`}
+      onClick={drawOne}
+      disabled={deckEmpty}
+      aria-label={deckEmpty ? 'No cards remaining' : 'Draw a card'}
+      title={deckEmpty ? 'No cards remaining' : `Draw a card (${remaining} left)`}
+    >
+      {deckEmpty ? 'no cards remaining' : (
+        <>
+          <span className="deck-count" aria-hidden>{remaining}</span>
+          <span className="sr-only" aria-live="polite">{remaining} cards remaining</span>
+        </>
+      )}
+    </button>
+  );
+
   return (
     <div className="app">
       <header>
@@ -92,23 +109,17 @@ export default function App() {
       </header>
       <main>
         <section className="controls">
-          <button
-            className={`deck ${deckEmpty ? 'deck-empty' : ''}`}
-            onClick={drawOne}
-            disabled={deckEmpty}
-          >
-            {deckEmpty ? 'no cards remaining' : 'Deck'}
-          </button>
+          {deckFace}
           <div className="buttons">
-            <button onClick={() => deal(5)}>Deal 5</button>
-            <button onClick={() => deal(7)}>Deal 7</button>
-            <button onClick={resetAll}>Reset</button>
-            <button onClick={tossPicked} disabled={pickedIndex === null}>Toss</button>
-            <button onClick={wildcard}>Wildcard</button>
-            <button onClick={regroup} disabled={hand.length < 2}>Regroup</button>
+            <button onClick={() => deal(5)} title="Deal five new cards">Deal 5</button>
+            <button onClick={() => deal(7)} title="Deal seven new cards">Deal 7</button>
+            <button onClick={resetAll} title="Reset deck and clear hand">Reset</button>
+            <button onClick={tossPicked} disabled={pickedIndex === null} title={pickedIndex === null ? 'Pick a card to toss' : 'Toss picked card'}>Toss</button>
+            <button onClick={wildcard} title="Add a random wildcard">Wildcard</button>
+            <button onClick={regroup} disabled={hand.length < 2} title={hand.length < 2 ? 'Need at least 2 cards' : 'Shuffle current hand'}>Regroup</button>
           </div>
         </section>
-        <section className="hand">
+        <section className="hand" aria-label="Selected cards">
           {hand.map((c, index) => (
             <Card
               key={c.id}
@@ -120,6 +131,11 @@ export default function App() {
           ))}
         </section>
       </main>
+      <footer>
+        <small>React + Hooks • Stateless Card component</small>
+      </footer>
     </div>
   );
 }
+
+
